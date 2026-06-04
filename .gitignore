@@ -28,3 +28,5 @@ finetuned_models/**
 Thumbs.db
 
 analysis/*.pt
+
+finetuned_models/**
