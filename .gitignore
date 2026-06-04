@@ -1,39 +1,28 @@
 # Python
-
-**pycache**/
+__pycache__/
 *.pyc
 *.pyo
 
-# Conda
+# VSCode
+.vscode/
 
+# Conda
 .env
 .venv
 
-# VSCode
-
-.vscode/
-
-# Large model files
-
-*.bin
-*.safetensors
-*.ckpt
-
-# Activation dumps
-
-activations/base/*.pt
-activations/finetuned/*.pt
+# Large activation files
+activations/**/*.pt
 
 # SAE checkpoints
+sae_models/**/*.pt
 
-sae_models/base/*.pt
-sae_models/finetuned/*.pt
+# Fine-tuned models
+finetuned_models/**
 
 # Reports
-
+*.pdf
 *.zip
 
-# OS
-
+# OS files
 .DS_Store
 Thumbs.db
