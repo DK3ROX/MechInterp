@@ -1,86 +1,164 @@
 # Mechanistic Interpretability of Python Fine-Tuning in Pythia-160M
 
-This project investigates how Python fine-tuning changes the internal representations of Pythia-160M.
+## Overview
 
-## Main Idea
+This project investigates how Python-specific fine-tuning changes the internal representations of Pythia-160M.
 
-Sparse Autoencoders (SAEs) are trained independently on:
+Using Sparse Autoencoders (SAEs), we compare Layer-6 activations from:
 
-* Base Pythia-160M activations
-* Python fine-tuned Pythia-160M activations
+* Base Pythia-160M
+* Python Fine-Tuned Pythia-160M
 
-The resulting feature spaces are compared using:
+The goal is to determine whether fine-tuning merely changes outputs or reorganizes the model's internal feature space.
 
-* Reconstruction transfer
-* Activation drift
-* Token-level drift
-* Sparse feature drift
+---
+
+## Experimental Pipeline
+
+```text
+CodeParrot Clean
+       │
+       ▼
+Pythia-160M (Base) ─────► Base SAE
+       │
+       ▼
+Layer 6 Activations
+
+Python Fine-Tuned Pythia-160M ─────► Fine-Tuned SAE
+       │
+       ▼
+Layer 6 Activations
+
+Comparison:
+- Reconstruction Transfer
+- Activation Drift
+- Token Drift
+- Sparse Feature Drift
+```
+
+---
 
 ## Dataset
 
-CodeParrot Clean
+Dataset:
 
-## Layer Analyzed
+* CodeParrot Clean
 
-Layer 6 Residual Stream
+Samples:
 
-## Key Findings
+* 1000 code files
 
-* Cross-domain SAE reconstruction degrades by 3-4×
-* Mean activation drift = 8.93
-* Strong changes around:
+Layer:
 
-  * self
-  * imports
-  * comments
-  * docstrings
-  * error handling
-* Fine-tuning selectively repurposes sparse features rather than globally reorganizing the representation space.
+* Layer 6 Residual Stream
 
+Activations:
 
-## Data and Model Artifacts
+* 255,984 tokens
+* Hidden dimension: 768
 
-The repository contains all source code used for:
+---
 
-* Activation extraction
-* Sparse Autoencoder training
-* Reconstruction transfer analysis
-* Activation drift analysis
-* Token-level drift analysis
-* Sparse feature drift analysis
+## Key Results
 
-Large artifacts such as:
+### SAE Reconstruction
 
-* Activation tensors
-* SAE checkpoints
-* Fine-tuned model checkpoints
-* Intermediate analysis files
+| Model          | Reconstruction Loss |
+| -------------- | ------------------: |
+| Base SAE       |              0.0944 |
+| Fine-Tuned SAE |              0.0897 |
 
-are stored separately on Google Drive due to GitHub size limitations.
+### Reconstruction Transfer
 
-### Google Drive
+| SAE      | Base Acts | FT Acts |
+| -------- | --------: | ------: |
+| Base SAE |    0.0881 |  0.2570 |
+| FT SAE   |    0.3548 |  0.0860 |
 
-Project files can be accessed here:
+Cross-domain reconstruction degrades by approximately 3–4×, indicating significant representational change after fine-tuning.
 
-LINK = "https://drive.google.com/drive/folders/1GRO3B1lEiKPTNwuqkQHdZzZ_iHO9oX2r?usp=drive_link"
+### Activation Drift
 
-Directory structure:
+Mean Drift:
+
+* 8.93
+
+Median Drift:
+
+* 7.95
+
+Max Drift:
+
+* 100.08
+
+### High-Drift Concepts
+
+* self
+* imports
+* comments
+* docstrings
+* error handling
+* Python data operations
+
+---
+
+## Main Findings
+
+* Python fine-tuning significantly reorganizes Layer-6 representations.
+* Internal activation patterns move substantially after fine-tuning.
+* The largest changes occur around software-engineering concepts.
+* Sparse feature drift is concentrated in a relatively small subset of SAE features.
+* Multiple independent analyses support the same conclusion.
+
+---
+
+## Repository Structure
 
 ```text
 MechInterp/
-│
-├── activations/
-│   ├── base/
-│   └── finetuned/
-│
-├── sae_models/
-│   ├── base/
-│   └── finetuned/
-│
-├── analysis/
-│
-└── finetuned_models/
-    └── pythia_python_final/
+
+├── scripts/
+├── results/
+├── README.md
+└── requirements.txt
 ```
 
-The repository and Google Drive together provide the complete experimental pipeline required to reproduce all reported results.
+---
+
+## External Artifacts
+
+Large files are stored separately due to GitHub size limits.
+
+Google Drive:
+
+LINK = "https://drive.google.com/drive/folders/1GRO3B1lEiKPTNwuqkQHdZzZ_iHO9oX2r?usp=drive_link"
+
+Contains:
+
+* Activation tensors
+* SAE checkpoints
+* Fine-tuned model
+* Intermediate analysis files
+
+---
+
+## Reproducing
+
+```bash
+pip install -r requirements.txt
+```
+
+1. Extract activations
+2. Train SAEs
+3. Run transfer analysis
+4. Run drift analysis
+
+---
+
+## Detailed Results
+
+See:
+
+```text
+results/final_results.md
+```
